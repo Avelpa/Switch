@@ -22,6 +22,13 @@ public class Main {
             {
                 view.move();
             }
+            view.repaint();
+            
+            if (view.isFading())
+            {
+                view.fade();
+            }
+            
             try
             {
                 Thread.sleep(1);

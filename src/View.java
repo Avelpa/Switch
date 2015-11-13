@@ -30,6 +30,11 @@ public class View extends JComponent implements MouseListener{
     private final double maxAngle = Math.toRadians(160);
     private double angle = restingAngle;
     private final double rate = 0.1;    
+    
+    private  boolean isFading = true;
+    private double fadeValue = 255;
+    private Color fadeColor = new Color(0, 0, 0, (int)fadeValue);
+    
     public View()
     {
         window = new JFrame("Switch");
@@ -45,6 +50,22 @@ public class View extends JComponent implements MouseListener{
         this.addMouseListener(this);
     }
     
+    public boolean isFading()
+    {
+        return isFading;
+    }
+    
+    public void fade()
+    {
+        fadeValue -= 0.5;
+        if (fadeValue < 0)
+        {
+            fadeValue = 0;
+            isFading = false;
+        }
+        fadeColor = new Color(fadeColor.getRed(), fadeColor.getGreen(), fadeColor.getBlue(), (int)fadeValue);
+    }
+    
     public void move()
     {
         angle -= Math.toRadians(rate);
@@ -52,7 +73,6 @@ public class View extends JComponent implements MouseListener{
         {
             angle = restingAngle;
         }
-        repaint();
     }
     
     public boolean isPressed()
@@ -63,14 +83,23 @@ public class View extends JComponent implements MouseListener{
     @Override
     public void paintComponent(Graphics g)
     {
-        g.setColor(Color.RED);
-        g.drawLine(x, y, x+(int)(radius*Math.cos(angle)), y-(int)(radius*Math.sin(angle)));
-        g.fillOval(x+(int)(radius*Math.cos(angle)-2), y-(int)(radius*Math.sin(angle))-2, 4, 4);
-        
-        g.setColor(Color.BLACK);
-        g.fillRect(x-width/2, y-height/2, width, height);
-    }
+        if (isFading)
+        {
+            g.setColor(fadeColor);
+            g.fillRect(0, 0, WIDTH, HEIGHT);
+        }
+        else
+        {
+           //g.clearRect(0, 0, WIDTH, HEIGHT);
+            g.setColor(Color.RED);
+            g.drawLine(x, y, x+(int)(radius*Math.cos(angle)), y-(int)(radius*Math.sin(angle)));
+            g.fillOval(x+(int)(radius*Math.cos(angle)-2), y-(int)(radius*Math.sin(angle))-2, 4, 4);
 
+            g.setColor(Color.BLACK);
+            g.fillRect(x-width/2, y-height/2, width, height);
+        }
+    }
+    
     @Override
     public void mouseClicked(MouseEvent e) {
     }
@@ -82,7 +111,6 @@ public class View extends JComponent implements MouseListener{
             if (e.getY() >= y-radius && e.getY() <= y)
             {
                 angle = maxAngle;
-                repaint();
             }
         }
     }
